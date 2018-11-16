@@ -1,9 +1,10 @@
 {
   "name": "cointap-dashboard",
   "version": "1.0.0",
-  "description": "My luminous Nuxt.js project",
-  "author": "shuguang-zhang",
+  "description": "General Dashboard, with resizable block",
+  "author": "KingNo21",
   "private": true,
+  "keywords": ["Vue", "NuxtJS", "Dashboard"],
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
