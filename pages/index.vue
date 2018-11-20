@@ -1,11 +1,6 @@
 <template>
   <div class="container">
-    <nav class="navi">
-      <datepicker
-        class="data-picker" />
-      <datepicker
-        class="data-picker" />
-    </nav>
+    <nav class="navi" />
     <block
       v-for="(graph, index) in demo"
       :key="index"
@@ -20,8 +15,6 @@
 import block from '../components/block'
 import chart from '../components/chart'
 import testBlock from '../components/test-block'
-import { getRandomInt } from '../utils/random'
-import Chart from 'chart.js'
 import Datepicker from 'vuejs-datepicker'
 import { range, map, each } from 'lodash'
 
