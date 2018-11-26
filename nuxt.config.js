@@ -45,6 +45,10 @@ module.exports = {
     // See https://github.com/nuxt-community/axios-module#options
   },
 
+  server: {
+    port: 3002
+  },
+
   /*
   ** Build configuration
   */
