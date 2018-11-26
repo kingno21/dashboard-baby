@@ -1,6 +1,6 @@
 <template>
   <div class="__container">
-    <div class="__overlay">hi</div>
+    <div class="__overlay" />
     <nuxt/>
   </div>
 </template>
