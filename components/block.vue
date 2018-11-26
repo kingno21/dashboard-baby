@@ -2,8 +2,12 @@
   <section
     :class="className"
     :style="section">
+    <div
+      class="__header"
+      draggable="true"
+      @dragstart="_dragstart"/>
     <div 
-      :style="block"
+      :style="[block, bgColor]"
       class="viewport">
       <slot />
     </div>
@@ -14,16 +18,21 @@
 </template>
 
 <script>
+import { debounce, merge } from 'lodash'
+
 export default {
   name: 'Block',
   props: {
-    gridSize: {
+    grid: {
       type: Object,
       reqired: true,
       default: function() {
         return {
-          x: 1,
-          y: 1
+          size: {
+            x: 1,
+            y: 1,
+            left: 0
+          }
         }
       }
     },
@@ -42,13 +51,25 @@ export default {
       default: 'block'
     }
   },
-  data: ({ gridSize, blockSize }) => {
+  data: ({ grid, blockSize }) => {
+    const gridSize = grid.size
+    var letters = '0123456789ABCDEF'
+    var color = '#'
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)]
+    }
     return {
       dragging: false,
       size: gridSize,
+      bgColor: {
+        'background-color': color
+      },
+      uid: grid.index,
       viewport: {
         width: blockSize.width * gridSize.x,
-        height: blockSize.height * gridSize.y
+        height: blockSize.height * gridSize.y - 20,
+        top: blockSize.height * gridSize.top,
+        left: blockSize.width * gridSize.left
       },
       delta: {
         x: 0,
@@ -61,7 +82,11 @@ export default {
       return {
         width: this.blockSize.width * this.size.x + 'px',
         height: this.blockSize.height * this.size.y + 'px',
-        backgroundColor: this.dragging ? 'lightpink' : 'transparent'
+        transform: `translate(
+          ${this.viewport.left}px,
+          ${this.viewport.top}px
+        )`,
+        backgroundColor: this.dragging ? 'red' : 'transparent'
       }
     },
     block() {
@@ -72,14 +97,33 @@ export default {
     }
   },
   watch: {
+    grid(newValue) {
+      const blockSize = this.blockSize
+      const size = newValue.size
+      this.size = size
+      merge(this.viewport, {
+        top: blockSize.height * size.top,
+        left: blockSize.width * size.left
+      })
+    },
     blockSize(newValue) {
-      this.viewport = {
-        width: newValue.width * this.size.x,
-        height: newValue.height * this.size.y
-      }
+      debounce(
+        (async () => {
+          merge(this.viewport, {
+            top: newValue.height * this.size.top,
+            left: newValue.width * this.size.left,
+            width: newValue.width * this.size.x,
+            height: newValue.height * this.size.y - 20
+          })
+        }).bind(this),
+        100
+      )()
     }
   },
   methods: {
+    _dragstart(event) {
+      console.log(event)
+    },
     _onMouseDown(event) {
       this.dragging = true
       const currentSize = {
@@ -110,16 +154,24 @@ export default {
         }
         this.viewport = {
           width: currentSize.vWidth + delta.x,
-          height: currentSize.vHeight + delta.y
+          height: currentSize.vHeight + delta.y - 20
         }
+        this.$emit('resizeGrid', {
+          index: this.uid,
+          size: this.size
+        })
       }).bind(this)
 
       const _up = (event => {
         this.dragging = false
         this.viewport = {
           width: this.size.x * this.blockSize.width,
-          height: this.size.y * this.blockSize.height
+          height: this.size.y * this.blockSize.height - 20
         }
+        this.$emit('resizeGrid', {
+          index: this.uid,
+          size: this.size
+        })
         window.removeEventListener('mousemove', _move)
         window.removeEventListener('mouseup', _up)
       }).bind(this)
@@ -131,12 +183,14 @@ export default {
 </script>
 <style>
 .block {
-  position: relative;
+  position: absolute;
   z-index: 100;
-  display: flex;
+  flex-direction: row;
+  transition: 300ms ease-in-out;
 }
 .viewport {
   z-index: 99;
+  overflow: scroll;
 }
 .dragger {
   z-index: 101;
@@ -149,5 +203,11 @@ export default {
   width: 10px;
   background-color: black;
   cursor: se-resize;
+}
+.__header {
+  height: 20px;
+  width: 100%;
+  background-color: #e0e0e0;
+  cursor: all-scroll;
 }
 </style>

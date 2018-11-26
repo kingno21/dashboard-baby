@@ -6,6 +6,7 @@
 <script>
 import Highcharts from 'highcharts/highstock'
 import datas from '../pages/data.json'
+import { debounce } from 'lodash'
 
 export default {
   name: 'Chart',
