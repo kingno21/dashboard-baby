@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="__container">
+    <div class="__overlay">hi</div>
     <nuxt/>
   </div>
 </template>
@@ -51,5 +52,14 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+.__container {
+  display: flex;
+  flex-direction: row;
+}
+.__overlay {
+  width: 200px;
+  background-color: gray;
+  z-index: 999999999;
 }
 </style>

@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <nav class="navi" />
-    <section class="sections">
+    <section
+      v-if="block.width !== 0"
+      class="sections">
       <block
         v-for="(graph, index) in layoutDemo"
         :key="index"
@@ -63,8 +65,8 @@ export default {
   data() {
     return {
       block: {
-        width: window.innerWidth / basicSizeWidth,
-        height: window.innerHeight / basicSizeHeight
+        width: 0,
+        height: 0
       },
       demo: [
         {
@@ -164,6 +166,10 @@ export default {
     }
   },
   mounted() {
+    this.block = {
+      width: this.$el.offsetWidth / basicSizeWidth,
+      height: this.$el.offsetHeight / basicSizeHeight
+    }
     window.addEventListener('resize', this.resizeWindow)
   },
   beforeDestory() {
@@ -172,8 +178,8 @@ export default {
   methods: {
     resizeWindow() {
       this.block = {
-        width: window.innerWidth / basicSizeWidth,
-        height: window.innerHeight / basicSizeHeight
+        width: this.$el.offsetWidth / basicSizeWidth,
+        height: this.$el.offsetHeight / basicSizeHeight
       }
     },
     relayoutGrid({ index, size }) {
@@ -225,14 +231,13 @@ export default {
 
 <style>
 .container {
-  width: 100vw;
+  width: 100%;
   background-color: white;
   display: block;
-  position: absolute;
   flex-wrap: wrap;
   align-content: flex-start;
   padding-top: 40px;
-  padding-bottom: 40px;
+  height: 100vh;
 }
 .navi {
   height: 40px;
@@ -248,6 +253,8 @@ export default {
 .sections {
   display: block;
   position: relative;
+  height: 100%;
+  overflow-y: scroll;
 }
 .vdp-datepicker__calendar {
   left: -169px;
